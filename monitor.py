@@ -1,37 +1,18 @@
+from alerts import blink_alert
+from printer import default_printer
 
-from time import sleep
-import sys
+def alert_if_critical(vitals, printer=default_printer, blinker=blink_alert):
+    all_ok = True
+    for vital in vitals:
+        val, min_val, max_val = vital["value"], vital["min"], vital["max"]
+        if val < min_val or val > max_val:
+            printer(
+                f"{vital['name']} out of range! "
+                f"Value: {val} (Expected: {min_val} to {max_val})"
+            )
+            blinker()
+            all_ok = False
+    return all_ok
 
-
-def vitals_ok(temperature, pulseRate, spo2):
-  if temperature > 102 or temperature < 95:
-    print('Temperature critical!')
-    for i in range(6):
-      print('\r* ', end='')
-      sys.stdout.flush()
-      sleep(1)
-      print('\r *', end='')
-      sys.stdout.flush()
-      sleep(1)
-    return False
-  elif pulseRate < 60 or pulseRate > 100:
-    print('Pulse Rate is out of range!')
-    for i in range(6):
-      print('\r* ', end='')
-      sys.stdout.flush()
-      sleep(1)
-      print('\r *', end='')
-      sys.stdout.flush()
-      sleep(1)
-    return False
-  elif spo2 < 90:
-    print('Oxygen Saturation out of range!')
-    for i in range(6):
-      print('\r* ', end='')
-      sys.stdout.flush()
-      sleep(1)
-      print('\r *', end='')
-      sys.stdout.flush()
-      sleep(1)
-    return False
-  return True
+def vitals_ok(vitals, printer=default_printer, blinker=blink_alert):
+    return alert_if_critical(vitals, printer, blinker)
