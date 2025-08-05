@@ -1,4 +1,4 @@
-from alerts import blink_alert
+from check_alerts import blink_alert
 from printer import default_printer
 
 def is_out_of_range(val, min_val, max_val):
